@@ -10,3 +10,34 @@ datasource db {
 model Widget {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 }
+
+model Type {
+  id          Int      @id @default(autoincrement()) // Primary key e auto-incremento
+  type        String   @unique @db.VarChar(30) // Campo único, de até 30 caracteres
+  description String   @db.VarChar(200) // Descrição de até 200 caracteres
+  
+  // Relacionamento
+  users       User[]
+}
+
+model User {
+  id       Int     @id @default(autoincrement()) // Primary key e auto-incremento
+  typeId   Int     // Chave estrangeira para Type
+  name     String  @db.VarChar(30) // Nome de até 30 caracteres
+  email    String  @unique @db.VarChar(30) // E-mail de até 30 caracteres, com unicidade
+  password String  // Campo de texto para a senha
+  
+  // Relacionamento
+  type     Type    @relation(fields: [typeId], references: [id]) // Relacionamento com a tabela Type
+  payments Payment[] // Relacionamento de 1:N com a tabela Payment
+}
+
+model Payment {
+  id      Int      @id @default(autoincrement()) // Primary key e auto-incremento
+  userId  Int      // Chave estrangeira para User
+  valor   Float    // Campo float para o valor
+  data    DateTime // Campo de data e hora
+  
+  // Relacionamento
+  user    User     @relation(fields: [userId], references: [id]) // Relacionamento com a tabela User
+}
